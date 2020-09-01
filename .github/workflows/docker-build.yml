@@ -33,10 +33,10 @@ jobs:
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
-          registry: ${{ env.GPR_HOSTNAME }}
+          registry: ${{ env.GCR_HOSTNAME }}
           repository: ${{ github.repository }}/slim
           tags: ${{ steps.craft_tag.outputs.image_tag }}
           build_args: BUILDKIT_INLINE_CACHE=1
           cache_froms: >
-            ${{ env.GPR_HOSTNAME }}/${{ github.repository }}:latest,
-            ${{ env.GPR_HOSTNAME }}/${{ github.repository }}:${{ steps.craft_tag.outputs.image_tag }}
+            ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:latest,
+            ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:${{ steps.craft_tag.outputs.image_tag }}
