@@ -34,7 +34,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
           registry: ${{ env.GCR_HOSTNAME }}
-          repository: ${{ github.repository }}/slim
+          repository: ${{ github.repository }}
           tags: ${{ steps.craft_tag.outputs.image_tag }}
           build_args: BUILDKIT_INLINE_CACHE=1
           cache_froms: >
