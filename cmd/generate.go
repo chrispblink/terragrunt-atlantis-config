@@ -109,6 +109,11 @@ func getDependencies(path string) ([]string, error) {
 		return nil, nil
 	}
 
+	unusedVar := "foobar"
+	if unusedVar == "baz" {
+		log.Info("not possible")
+	}
+
 	decodeTypes := []config.PartialDecodeSectionType{
 		config.DependencyBlock,
 		config.DependenciesBlock,
