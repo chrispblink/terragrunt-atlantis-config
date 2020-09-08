@@ -18,7 +18,7 @@ jobs:
 
       - name: pull the build stage
         run: |
-          echo ${{ secrets.CR_PAT }} | docker login docker.pkg.github.com -u ${{ github.repository_owner }} --password-stdin
+          echo ${{ secrets.CR_PAT }} | docker login ${{ env.GCR_HOSTNAME }} -u ${{ github.repository_owner }} --password-stdin
           docker pull ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build
 
       - name: Build the first stage (build environment)
