@@ -16,7 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build the first stage (build environment)
+      - name: Build and cache first stage (build environment)
+        # update the first stage cache only when pushing to or tagging main
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/build-push-action@v1
         env:
           # use BuildKit to speed up builds and improve caching
@@ -30,8 +32,6 @@ jobs:
           tags: build
           build_args: BUILDKIT_INLINE_CACHE=1
           cache_froms: ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build
-          # we only want to push when we're not in a pull request
-          push: ${{ github.event_name != 'pull_request' }}
 
       - name: Build the final product (live artifact)
         uses: docker/build-push-action@v1
