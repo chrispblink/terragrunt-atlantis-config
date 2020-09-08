@@ -25,18 +25,33 @@ jobs:
           -e 's/\//-/g'
           -e 's/master/latest/'
 
-      - name: Build with cache
+      - name: Build the first stage (build environment)
         uses: docker/build-push-action@v1
         env:
           # use BuildKit to speed up builds and improve caching
           DOCKER_BUILDKIT: 1
         with:
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+          registry: ${{ env.GCR_HOSTNAME }}
+          repository: ${{ github.repository }}
+          tags: ${{ steps.craft_tag.outputs.image_tag }}
+          build_args: BUILDKIT_INLINE_CACHE=1
+          cache_froms: ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build
+
+      - name: Build the final product (live artifact)
+        uses: docker/build-push-action@v1
+        env:
+          # use BuildKit to speed up builds and improve caching
+          DOCKER_BUILDKIT: 1
+        with:
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
           registry: ${{ env.GCR_HOSTNAME }}
           repository: ${{ github.repository }}
           tags: ${{ steps.craft_tag.outputs.image_tag }}
           build_args: BUILDKIT_INLINE_CACHE=1
           cache_froms: >
+            ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build,
             ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:latest,
             ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:${{ steps.craft_tag.outputs.image_tag }}
