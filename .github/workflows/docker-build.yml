@@ -30,6 +30,8 @@ jobs:
           tags: build
           build_args: BUILDKIT_INLINE_CACHE=1
           cache_froms: ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build
+          # we only want to push when we're not in a pull request
+          push: ${{ github.event_name != 'pull_request' }}
 
       - name: Build the final product (live artifact)
         uses: docker/build-push-action@v1
