@@ -16,15 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Craft a valid tag for this build
-        id: craft_tag
-        run: >
-          echo -n "::set-output name=image_tag::";
-          echo ${{ github.ref }}
-          | sed -E -e 's/refs\/(heads|tags)?\/?//'
-          -e 's/\//-/g'
-          -e 's/master/latest/'
-
       - name: Build the first stage (build environment)
         uses: docker/build-push-action@v1
         env:
@@ -49,9 +40,8 @@ jobs:
           password: ${{ secrets.CR_PAT }}
           registry: ${{ env.GCR_HOSTNAME }}
           repository: ${{ github.repository }}
-          tags: ${{ steps.craft_tag.outputs.image_tag }}
+          tag_with_ref: true
           build_args: BUILDKIT_INLINE_CACHE=1
           cache_froms: >
             ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build,
-            ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:latest,
-            ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:${{ steps.craft_tag.outputs.image_tag }}
+            ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:latest
