@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:experimental
-
 FROM golang AS build
 
 ENV GO111MODULE=on
@@ -7,12 +5,13 @@ WORKDIR /app
 
 # copy source
 COPY go.mod go.sum main.go ./
-COPY cmd ./cmd
 
-# build the executable (w/cache hints)
-RUN --mount=type=cache,target=$GOPATH/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
+# fetch deps separately (for layer caching)
+RUN go mod download
+
+# build the executable
+COPY cmd ./cmd
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 
 # create super thin container with the binary only
 FROM scratch
