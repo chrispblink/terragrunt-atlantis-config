@@ -1,4 +1,4 @@
-# only run when we push changes to master or PRs
+# only run when we push changes to master or  PRs
 on:
   push:
     branches: [master]
