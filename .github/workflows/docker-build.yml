@@ -1,8 +1,11 @@
-# only run when we push changes to master or  PRs
+name: Build and publish container image
+
 on:
+  # run when tagging or pushing to master
   push:
     branches: [master]
     tags: ["*"]
+  # run on PRs against master
   pull_request:
     branches: [master]
   workflow_dispatch:
@@ -16,15 +19,15 @@ env:
   GCR_HOSTNAME: ghcr.io
 
 jobs:
-  build_with_action:
+  build_and_push:
     runs-on: ubuntu-latest
     steps:
-      # do the normal checkout when the event is push/pull_request
-      - uses: actions/checkout@v2
+      - name: Checkout the latest SHA for this branch
+        uses: actions/checkout@v2
         if: github.event_name != 'workflow_dispatch'
 
-      # checkout the specified tag when the event is workflow_dispatch
-      - uses: actions/checkout@v2
+      - name: Checkout the specified tag
+        uses: actions/checkout@v2
         if: github.event_name == 'workflow_dispatch'
         with:
           ref: ${{ github.event.inputs.tag }}
