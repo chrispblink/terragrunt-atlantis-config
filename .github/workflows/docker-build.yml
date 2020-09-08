@@ -5,6 +5,11 @@ on:
     tags: ["*"]
   pull_request:
     branches: [master]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Build a container image for this GitHub tag
+        required: true
 
 env:
   # GitHub Container Registry hostname
@@ -14,11 +19,17 @@ jobs:
   build_with_action:
     runs-on: ubuntu-latest
     steps:
+      # do the normal checkout when the event is push/pull_request
       - uses: actions/checkout@v2
+        if: github.event_name != "workflow_dispatch"
+
+      # checkout the specified tag when the event is workflow_dispatch
+      - uses: actions/checkout@v2
+        if: github.event_name == "workflow_dispatch"
 
       - name: Build and cache first build stage
         # update the first stage cache only when pushing to or tagging main
-        if: ${{ github.event_name != 'pull_request' }}
+        if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v1
         env:
           # use BuildKit to speed up builds and improve caching
