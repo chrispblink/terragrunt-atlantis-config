@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: pull the build stage
+        run: |
+          echo ${{ github.token }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+          docker pull ${{ env.GCR_HOSTNAME }}/${{ github.repository }}:build
+
       - name: Build the first stage (build environment)
         uses: docker/build-push-action@v1
         env:
