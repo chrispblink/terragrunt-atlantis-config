@@ -21,11 +21,13 @@ jobs:
     steps:
       # do the normal checkout when the event is push/pull_request
       - uses: actions/checkout@v2
-        if: github.event_name != "workflow_dispatch"
+        if: github.event_name != 'workflow_dispatch'
 
       # checkout the specified tag when the event is workflow_dispatch
       - uses: actions/checkout@v2
-        if: github.event_name == "workflow_dispatch"
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
       - name: Build and cache first build stage
         # update the first stage cache only when pushing to or tagging main
